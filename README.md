@@ -72,6 +72,6 @@ python SnapAI.py
 ### 1. Download the Windows installer:
 https://github.com/UB-Mannheim/tesseract/wiki
 
-### 2. Install it to the default path:
+### 2. Run the installer (.exe) and install it to the default path:
 C:\Program Files\Tesseract-OCR\tesseract.exe
 
