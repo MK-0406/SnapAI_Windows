@@ -129,6 +129,7 @@ class FloatingPanel(QtWidgets.QWidget):
         self.observer = Observer()
         self.observer.schedule(self.handler, WATCHED_FOLDER, recursive=False)
         self.observer.start()
+        self.clip_timer.start(1000)
         self.update_text("Monitoring started...")
         self.monitoring = True
 
@@ -137,6 +138,7 @@ class FloatingPanel(QtWidgets.QWidget):
             self.observer.stop()
             self.observer.join()
             self.observer = None
+            self.clip_timer.stop()
             self.update_text("Monitoring stopped.")
             self.monitoring = False
 
