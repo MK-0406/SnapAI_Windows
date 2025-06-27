@@ -1,7 +1,7 @@
 import sys
 import os
 
-log_file = os.path.expanduser("~/snapai_log.txt")
+log_file = "snapai_log.txt"
 #sys.stdout = open(log_file, "a")
 #sys.stderr = sys.stdout
 print("\n\n--- SnapAI launched ---\n")
@@ -67,7 +67,7 @@ class FloatingPanel(QtWidgets.QWidget):
         self.content_layout = QtWidgets.QVBoxLayout(self.content_widget)
 
         self.label = QtWidgets.QLabel("Welcome to SnapAI. Please wait for awhile after starting the monitoring for the app to load.")
-        self.label.setStyleSheet("QLabel { color: white; font-size: 16px; padding: 10px; }")
+        self.label.setStyleSheet("QLabel { color: white; font-size: 32px; padding: 14px; }")
         self.label.setWordWrap(True)
 
         self.content_layout.addWidget(self.label)
@@ -80,6 +80,11 @@ class FloatingPanel(QtWidgets.QWidget):
         self.stop_btn = QtWidgets.QPushButton("Stop")
         self.quit_btn = QtWidgets.QPushButton("Quit")
 
+        button_style = "QPushButton { color: white; font-size: 28px; padding: 6px 12px; }"
+        self.start_btn.setStyleSheet(button_style)
+        self.stop_btn.setStyleSheet(button_style)
+        self.quit_btn.setStyleSheet(button_style)
+
         self.start_btn.clicked.connect(self.start_monitoring)
         self.stop_btn.clicked.connect(self.stop_monitoring)
         self.quit_btn.clicked.connect(QtWidgets.qApp.quit)
@@ -89,7 +94,7 @@ class FloatingPanel(QtWidgets.QWidget):
         button_layout.addWidget(self.quit_btn)
         layout.addLayout(button_layout)
 
-        self.resize(460, 260)
+        self.resize(900, 500)
         self.move(400, 200)
         self.show()
 
