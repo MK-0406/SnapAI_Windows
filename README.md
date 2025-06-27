@@ -8,7 +8,7 @@ Perfect for answering quizzes, fill-in-the-blanks, and MCQs from screenshots.
 
 ## ✨ Features
 
-- 📸 Monitors `Screenshots` folder for new screenshots
+- 📸 Detects screenshots from both clipboard and folder
 - 🧠 Extracts text using [Tesseract OCR](https://github.com/tesseract-ocr/tesseract)
 - 💬 Sends text to Groq’s **LLaMA 3** model via API
 - 🪟 Always-on-top transparent floating UI
