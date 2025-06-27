@@ -1,17 +1,21 @@
 import sys
 import os
 
-log_file = "snapai_log.txt"
+log_file = os.path.expanduser("~/snapai_log.txt")
 #sys.stdout = open(log_file, "a")
 #sys.stderr = sys.stdout
 print("\n\n--- SnapAI launched ---\n")
 
+import hashlib
+from PyQt5.QtCore import QBuffer
 import time
 import pytesseract
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 from PIL import Image
 import requests
 from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtGui import QImage
+from PyQt5.QtGui import QPixmap
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from threading import Thread
@@ -98,10 +102,17 @@ class FloatingPanel(QtWidgets.QWidget):
         self.move(400, 200)
         self.show()
 
+        self.handler = ScreenshotHandler(self)
         self.observer = None
-        self.handler = None
         self.monitoring = False
         self.updateTextSignal.connect(self.update_text)
+
+        self.last_clipboard_hash = ""
+        self.processing_clipboard = False
+        self.clip_timer = QtCore.QTimer()
+        self.clip_timer.timeout.connect(self.check_clipboard_image)
+        self.clip_timer.start(1000)
+
 
 
     @QtCore.pyqtSlot(str)
@@ -115,7 +126,6 @@ class FloatingPanel(QtWidgets.QWidget):
     def start_monitoring(self):
         if self.monitoring:
             return
-        self.handler = ScreenshotHandler(self)
         self.observer = Observer()
         self.observer.schedule(self.handler, WATCHED_FOLDER, recursive=False)
         self.observer.start()
@@ -142,6 +152,31 @@ class FloatingPanel(QtWidgets.QWidget):
     def mouseReleaseEvent(self, event):
         self.dragging = False
 
+    def get_image_hash(self, image: QImage) -> str:
+        buffer = QBuffer()
+        buffer.open(QBuffer.ReadWrite)
+        image.save(buffer, "PNG")
+        return hashlib.md5(buffer.data()).hexdigest()
+
+    def check_clipboard_image(self):
+        if self.processing_clipboard:
+            return
+
+        clipboard = QtWidgets.QApplication.clipboard()
+        mime = clipboard.mimeData()
+        if mime.hasImage():
+            image = clipboard.image()
+            current_hash = self.get_image_hash(image)
+            if current_hash != self.last_clipboard_hash:
+                self.last_clipboard_hash = current_hash
+                # Save to temporary file
+                path = os.path.join(os.path.dirname(__file__), "clipboard_image.png")
+                QPixmap.fromImage(image).save(path)
+                def wrapped():
+                    self.handler.process_screenshot(path)
+                    self.processing_clipboard = False
+                Thread(target=wrapped, daemon=True).start()
+
 class ScreenshotHandler(FileSystemEventHandler):
     def __init__(self, panel):
         self.panel = panel
@@ -166,6 +201,12 @@ class ScreenshotHandler(FileSystemEventHandler):
                 )
         except Exception as e:
             print("Error:", e)
+        finally:
+            if "clipboard_image.png" in path:
+                try:
+                    os.remove(path)
+                except Exception:
+                    pass
 
 def ask_ai(prompt):
     import datetime
