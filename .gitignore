@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+
+# Logs and environment
+snapai_log.txt
+.env
+
+# Build artifacts (if you compile with pyinstaller)
+build/
+dist/
+*.spec
