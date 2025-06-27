@@ -42,7 +42,7 @@ cd C:\Users\YourName\Downloads\SnapAI_Windows-main\SnapAI_Windows-main
 ### 5. Create a `.env` file with your API key:
 
 ```bash
-echo "GROQ_API_KEY=your_groq_api_key_here" > .env
+echo GROQ_API_KEY=your_groq_api_key_here > .env
 ```
 
 ### 6. Install dependencies:
