@@ -67,6 +67,8 @@ python SnapAI.py
 - Tesseract OCR
 - Python 3.8 or later
 
+---
+
 ## Install Tesseract OCR on Windows
   
 ### 1. Download the Windows installer:
@@ -74,6 +76,8 @@ https://github.com/UB-Mannheim/tesseract/wiki
 
 ### 2. Run the installer (.exe) and install it to the default path:
 C:\Program Files\Tesseract-OCR\tesseract.exe
+
+---
 
 ## 📘 User Manual
 
@@ -95,3 +99,5 @@ Click Stop to stop watching for new screenshots.
 
 ### ❌ Quit
 Click Quit to close the app.
+
+---
