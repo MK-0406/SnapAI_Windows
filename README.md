@@ -37,6 +37,23 @@ cd C:\Users\YourName\Documents
 git clone https://github.com/yourusername/SnapAI_Windows.git
 cd SnapAI_Windows
 ```
+Refer to the steps below to download git.
+
+#### 1. Download Git for Windows
+
+Visit: https://git-scm.com/download/win
+It should start downloading automatically.
+
+#### 2. Install Git
+
+Run the installer.
+On the setup screen, keep all default settings.
+Most importantly:
+✅ Ensure "Git from the command line and also from 3rd-party software" is selected (this adds Git to your PATH).
+
+#### 3. Restart Command Prompt
+
+After installing, close and reopen Command Prompt to reload the environment.
 
 ### 4. Get a Groq API Key
 1. Go to https://console.groq.com/keys
