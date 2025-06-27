@@ -2,8 +2,8 @@ import sys
 import os
 
 log_file = os.path.expanduser("~/snapai_log.txt")
-sys.stdout = open(log_file, "a")
-sys.stderr = sys.stdout
+#sys.stdout = open(log_file, "a")
+#sys.stderr = sys.stdout
 print("\n\n--- SnapAI launched ---\n")
 
 import time
