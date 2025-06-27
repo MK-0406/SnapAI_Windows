@@ -75,3 +75,23 @@ https://github.com/UB-Mannheim/tesseract/wiki
 ### 2. Run the installer (.exe) and install it to the default path:
 C:\Program Files\Tesseract-OCR\tesseract.exe
 
+## 📘 User Manual
+
+### 🖥️ Interface
+A floating window will appear with:
+- Welcome message
+- Scrollable response area
+- Start, Stop, and Quit buttons
+
+### ▶️ Start Monitoring
+Click Start to begin monitoring your Screenshots folder (Pictures\Screenshots). When a new screenshot is added:
+
+1. The image is scanned with OCR.
+2. Text is sent to the Groq AI.
+3. The panel displays the AI-generated response.
+   
+### ⏹️ Stop Monitoring
+Click Stop to stop watching for new screenshots.
+
+### ❌ Quit
+Click Quit to close the app.
