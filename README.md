@@ -1,6 +1,6 @@
 # 📷 SnapAI (Windows)
 
-**SnapAI** is a lightweight floating panel app for **Windows** that monitors your screenshot folder, extracts text using OCR, and sends it to the **Groq LLaMA 3 API** to generate intelligent answers.
+**SnapAI** is a lightweight floating panel app for **Windows** that monitors your screenshot folder, extracts text using OCR, and sends it to the **Gemini 2.5 Flash API** to generate intelligent answers.
 
 Perfect for answering quizzes, fill-in-the-blanks, and MCQs from screenshots.
 
@@ -10,7 +10,7 @@ Perfect for answering quizzes, fill-in-the-blanks, and MCQs from screenshots.
 
 - 📸 Detects screenshots from both clipboard and folder
 - 🧠 Extracts text using [Tesseract OCR](https://github.com/tesseract-ocr/tesseract)
-- 💬 Sends text to Groq’s **LLaMA 3** model via API
+- 💬 Sends text to Google's **Gemini 2.5 Flash** model via API
 - 🪟 Always-on-top transparent floating UI
 - ✅ Start / Stop / Quit controls
 - 📋 Logs saved to `~/snapai_log.txt`
@@ -33,16 +33,16 @@ Command Prompt → Press Win + R, type cmd, press Enter
 cd C:\Users\YourName\Downloads\SnapAI_Windows-main\SnapAI_Windows-main
 ```
 
-### 4. Get a Groq API Key
-1. Go to https://console.groq.com/keys
-2. Sign up or log in with your account.
+### 4. Get a Gemini API Key
+1. Go to https://aistudio.google.com/app/apikey
+2. Sign up or log in with your Google account.
 3. Click "Create API Key"
-4. Copy the key (starts with gsk_...)
+4. Copy the key 
 
 ### 5. Create a `.env` file with your API key:
 
 ```bash
-echo GROQ_API_KEY=your_groq_api_key_here > .env
+echo GOOGLE_API_KEY=your_google_api_key_here > .env
 ```
 
 ### 6. Install dependencies:
@@ -65,7 +65,7 @@ python SnapAI.py
 
 - Windows OS
 - Tesseract OCR
-- Python 3.8 or later
+- Python 3.13
 
 ---
 
@@ -91,7 +91,7 @@ A floating window will appear with:
 Click Start to begin monitoring your Screenshots folder (Pictures\Screenshots). When a new screenshot is added:
 
 1. The image is scanned with OCR.
-2. Text is sent to the Groq AI.
+2. Text is sent to the Gemini AI.
 3. The panel displays the AI-generated response.
    
 ### ⏹️ Stop Monitoring

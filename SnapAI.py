@@ -19,12 +19,19 @@ from PyQt5.QtGui import QPixmap
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from threading import Thread
+from google import genai
+from pathlib import Path
 from dotenv import load_dotenv
 load_dotenv()
 
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-WATCHED_FOLDER = os.path.join(os.path.expanduser("~"), "Pictures", "Screenshots")
-AI_MODEL = "llama3-70b-8192"
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+client = genai.Client(api_key=GOOGLE_API_KEY)
+AI_MODEL = "gemini-2.5-flash"
+
+WATCHED_FOLDER = Path.home() / "Pictures" / "Screenshots"
+WATCHED_FOLDER.mkdir(parents=True, exist_ok=True)
+
+WATCHED_FOLDER = str(WATCHED_FOLDER)
 
 class FloatingPanel(QtWidgets.QWidget):
     updateTextSignal = QtCore.pyqtSignal(str)
@@ -70,12 +77,22 @@ class FloatingPanel(QtWidgets.QWidget):
         self.content_widget = QtWidgets.QWidget()
         self.content_layout = QtWidgets.QVBoxLayout(self.content_widget)
 
-        self.label = QtWidgets.QLabel("Welcome to SnapAI. Please wait for awhile after starting the monitoring for the app to load.")
-        self.label.setStyleSheet("QLabel { color: white; font-size: 32px; padding: 14px; }")
-        self.label.setWordWrap(True)
+        self.label = QtWidgets.QTextEdit()
+        self.label.setReadOnly(True)
+        self.label.setMarkdown("Welcome to SnapAI...")
+        self.label.setStyleSheet("""
+            QTextEdit {
+                color: white;
+                font-size: 32px;
+                background: transparent;
+                border: none;
+            }
+        """)
+        self.label.setLineWrapMode(QtWidgets.QTextEdit.WidgetWidth)
 
         self.content_layout.addWidget(self.label)
         self.scroll.setWidget(self.content_widget)
+        self.scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         layout.addWidget(self.scroll)
 
         # Buttons
@@ -98,7 +115,7 @@ class FloatingPanel(QtWidgets.QWidget):
         button_layout.addWidget(self.quit_btn)
         layout.addLayout(button_layout)
 
-        self.resize(900, 500)
+        self.setFixedSize(900, 500)
         self.move(400, 200)
         self.show()
 
@@ -117,11 +134,7 @@ class FloatingPanel(QtWidgets.QWidget):
 
     @QtCore.pyqtSlot(str)
     def update_text(self, new_text):
-        self.label.setText(new_text)
-        self.label.adjustSize()
-        self.raise_()
-        self.activateWindow()
-        self.show()
+        self.label.setMarkdown(new_text)
 
     def start_monitoring(self):
         if self.monitoring:
@@ -186,21 +199,19 @@ class ScreenshotHandler(FileSystemEventHandler):
     def on_created(self, event):
         if event.is_directory or not event.src_path.lower().endswith((".png", ".jpg", ".jpeg")):
             return
+        self.panel.updateTextSignal.emit("Processing screenshot...")
         Thread(target=self.process_screenshot, args=(event.src_path,), daemon=True).start()
 
     def process_screenshot(self, path):
         time.sleep(1)
         try:
             text = pytesseract.image_to_string(Image.open(path))
+            text = "Please give a short answer\n" + text
             print("🖼️ OCR Text:", text)
             if text.strip():
+                self.panel.updateTextSignal.emit("Asking AI...")
                 ai_response = ask_ai(text)
-                QtCore.QMetaObject.invokeMethod(
-                    self.panel,
-                    "update_text",
-                    QtCore.Qt.QueuedConnection,
-                    QtCore.Q_ARG(str, ai_response)
-                )
+                self.panel.updateTextSignal.emit(ai_response)
         except Exception as e:
             print("Error:", e)
         finally:
@@ -212,32 +223,25 @@ class ScreenshotHandler(FileSystemEventHandler):
 
 def ask_ai(prompt):
     import datetime
-    with open(log_file, "a") as f:
-        f.write(f"\n[{datetime.datetime.now()}] Sending prompt to AI: {prompt}\n")
-
-    headers = {
-        "Authorization": f"Bearer {GROQ_API_KEY}",
-        "Content-Type": "application/json"
-    }
-    data = {
-        "model": AI_MODEL,
-        "messages": [{"role": "user", "content": prompt}]
-    }
     try:
-        response = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=data)
         with open(log_file, "a") as f:
-            f.write(f"[{datetime.datetime.now()}] Status: {response.status_code}\n")
-            f.write(f"Response text: {response.text[:500]}\n")
-        if response.status_code != 200:
-            print("API Error:", response.status_code, response.text)
-            return f"Error {response.status_code}: {response.text}"
-        result = response.json()['choices'][0]['message']['content']
+            f.write(f"\n[{datetime.datetime.now()}] Sending prompt to Gemini: {prompt}\n")
+
+        response = client.models.generate_content(
+            model=AI_MODEL,
+            contents=prompt
+        )
+
+        result = response.text
+
+        with open(log_file, "a") as f:
+            f.write(f"[{datetime.datetime.now()}] Response: {result[:500]}\n")
+
         print("AI Response:", result)
         return result
+
     except Exception as e:
-        print("AI Exception:", e)
-        with open(log_file, "a") as f:
-            f.write(f"[{datetime.datetime.now()}] Exception: {e}\n")
+        print("Gemini Error:", e)
         return f"Error: {e}"
 
 def main():
