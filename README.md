@@ -4,6 +4,8 @@
 
 Perfect for answering quizzes, fill-in-the-blanks, and MCQs from screenshots.
 
+![snapai-windows](images/image.png)
+
 ---
 
 ## ✨ Features
